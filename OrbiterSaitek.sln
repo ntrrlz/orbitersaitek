@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2012 for Windows Desktop
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OrbiterSaitek", "OrbiterSaitek\OrbiterSaitek.vcxproj", "{12ABE933-D902-42F5-BAA8-85D7C95FA46D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{12ABE933-D902-42F5-BAA8-85D7C95FA46D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{12ABE933-D902-42F5-BAA8-85D7C95FA46D}.Debug|Win32.Build.0 = Debug|Win32
+		{12ABE933-D902-42F5-BAA8-85D7C95FA46D}.Release|Win32.ActiveCfg = Release|Win32
+		{12ABE933-D902-42F5-BAA8-85D7C95FA46D}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
