@@ -6,38 +6,47 @@
 #include "orbitersdk.h" 
 #include "OrbiterAPI.h"
 
-#include "hidapi.h"
+#include "OrbiterSaitek.h"
 
-void increaseNav(VESSEL *vessel, DWORD navNum , bool decimal, bool increase );
-void parseNavData(VESSEL *vessel, DWORD navNum, unsigned char * buffer);
+
 
 HINSTANCE g_hDLL; 
-
-hid_device *handle;
 
 DLLCLBK void InitModule (HINSTANCE hModule) 
 { 
 	g_hDLL = hModule; 
 	// perform global module initialisation here 
+	OrbiterSaitek * mod = new OrbiterSaitek(hModule);
+	oapiRegisterModule(mod);
+} 
+
+DLLCLBK void ExitModule (HINSTANCE hModule) 
+{ 
+} 
+
+
+OrbiterSaitek::OrbiterSaitek(HINSTANCE hDLL)
+	: oapi::Module(hDLL)
+{
 	handle = hid_open(0x06a3, 0x0d05, NULL);
 	oapiWriteLog("Device opened");
 	// Set the hid_read() function to be non-blocking.
 	hid_set_nonblocking(handle, 1);
 
-} 
+}
 
-DLLCLBK void ExitModule (HINSTANCE hModule) 
-{ 
+OrbiterSaitek::~OrbiterSaitek()
+{
 	// perform module cleanup here 
 	hid_close(handle);
 	hid_exit();
-} 
+
+}
 
 
-DLLCLBK void opcPreStep (double SimT, double SimDT, double mjd) // call every timestep
+void OrbiterSaitek::clbkPreStep (double SimT, double SimDT, double mjd) // call every timestep
 {
-	unsigned char buf[23];
-	unsigned char inBuffer[5];
+	static unsigned char inBuffer[5];
 
 
 	if (!handle)
@@ -97,6 +106,26 @@ DLLCLBK void opcPreStep (double SimT, double SimDT, double mjd) // call every ti
 				increaseNav(vessel,1,false,false);
 			}
 		}
+	}
+
+
+}
+
+void OrbiterSaitek::clbkPostStep (double SimT, double SimDT, double mjd) // call every timestep
+{
+	static unsigned char buf[23];
+
+	if (!handle)
+	{
+		return;
+	}
+
+	VESSEL *vessel = oapiGetFocusInterface(); // Get current vessel
+
+
+	if (vessel!=NULL) // check if pointer is valid
+	{
+
 		buf[0]=0x00;
 		// parse nav1
 		parseNavData(vessel, 0, &(buf[1]));
@@ -109,7 +138,7 @@ DLLCLBK void opcPreStep (double SimT, double SimDT, double mjd) // call every ti
 
 }
 
-void parseNavData(VESSEL *vessel, DWORD navNum, unsigned char * buffer)
+void OrbiterSaitek::parseNavData(VESSEL *vessel, DWORD navNum, unsigned char * buffer)
 {
 	if (vessel->GetNavCount() > navNum) {
 		// vessel has nav
@@ -129,12 +158,12 @@ void parseNavData(VESSEL *vessel, DWORD navNum, unsigned char * buffer)
 			vessel->GetGlobalPos(gpos);
 
 			double signal = oapiGetNavSignal(navHandle, gpos);
-
-			buffer[5] = (signal > 1) ? 0xe0 : 0x0f;
-			buffer[6] = (signal > 10) ? 0xe0 : 0x0f;
-			buffer[7] = (signal > 100) ? 0xe0 : 0x0f;
-			buffer[8] = (signal > 1000) ? 0xe0 : 0x0f;
-			buffer[9] = (signal > 10000) ? 0xe0 : 0x0f;
+			int bars = max(0,min(5,1+(int)(0.5*log(signal))));
+			buffer[5] = (bars >= 1) ? 0xe0 : 0x0f;
+			buffer[6] = (bars >= 2) ? 0xe0 : 0x0f;
+			buffer[7] = (bars >= 3) ? 0xe0 : 0x0f;
+			buffer[8] = (bars >= 4) ? 0xe0 : 0x0f;
+			buffer[9] = (bars >= 5) ? 0xe0 : 0x0f;
 
 		}
 		else 
@@ -166,7 +195,7 @@ void parseNavData(VESSEL *vessel, DWORD navNum, unsigned char * buffer)
 
 }
 
-void increaseNav(VESSEL *vessel, DWORD navNum , bool decimal, bool increase )
+void OrbiterSaitek::increaseNav(VESSEL *vessel, DWORD navNum , bool decimal, bool increase )
 {
 	DWORD navCount = vessel->GetNavCount();
 	if (navCount <= navNum)
