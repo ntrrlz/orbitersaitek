@@ -84,10 +84,12 @@
   <ItemGroup>
     <ClCompile Include="hid.c" />
     <ClCompile Include="OrbiterSaitek.cpp" />
+    <ClCompile Include="RadioPanel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hidapi.h" />
     <ClInclude Include="OrbiterSaitek.h" />
+    <ClInclude Include="RadioPanel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

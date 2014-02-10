@@ -5,7 +5,7 @@
 #include <ModuleAPI.h>
 
 
-#include "hidapi.h"
+class RadioPanel;
 
 class OrbiterSaitek : public oapi::Module
 {
@@ -18,11 +18,7 @@ public:
 
 private:
 
-	void increaseNav(VESSEL *vessel, DWORD navNum , bool decimal, bool increase );
-	void parseNavData(VESSEL *vessel, DWORD navNum, unsigned char * buffer);
-
-	hid_device *handle;
-
+	RadioPanel * radioPanel;
 
 };
 
