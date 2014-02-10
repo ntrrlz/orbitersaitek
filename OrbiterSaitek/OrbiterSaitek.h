@@ -15,7 +15,7 @@ public:
 
 	virtual void clbkPreStep (double simt, double simdt, double mjd);
 	virtual void clbkPostStep (double simt, double simdt, double mjd);
-
+	virtual void clbkSimulationEnd ();
 private:
 
 	RadioPanel * radioPanel;

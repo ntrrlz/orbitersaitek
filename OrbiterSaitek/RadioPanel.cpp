@@ -20,7 +20,7 @@ RadioPanel::~RadioPanel()
 }
 void RadioPanel::checkInputs()
 {
-		static unsigned char inBuffer[5];
+	static unsigned char inBuffer[5];
 
 
 	if (!handle)
@@ -87,7 +87,7 @@ void RadioPanel::checkInputs()
 
 void RadioPanel::updateDisplay()
 {
-		static unsigned char buf[23];
+	static unsigned char buf[23];
 
 	if (!handle)
 	{
@@ -111,6 +111,24 @@ void RadioPanel::updateDisplay()
 
 }
 
+void RadioPanel::clearDisplay()
+{
+	static unsigned char buf[23] = { 0x00,
+		0x0f,0x0f,0x0f,0x0f,0x0f,
+		0x0f,0x0f,0x0f,0x0f,0x0f,
+		0x0f,0x0f,0x0f,0x0f,0x0f,
+		0x0f,0x0f,0x0f,0x0f,0x0f,
+		0x00,0x00 };
+
+	if (!handle) 
+	{
+		return;
+	}
+
+	int res = hid_send_feature_report(handle, buf, 23);	
+
+
+}
 
 void RadioPanel::parseNavData(VESSEL *vessel, DWORD navNum, unsigned char * buffer)
 {

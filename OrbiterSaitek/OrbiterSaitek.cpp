@@ -51,5 +51,10 @@ void OrbiterSaitek::clbkPostStep (double SimT, double SimDT, double mjd) // call
 	radioPanel->updateDisplay();
 }
 
+void OrbiterSaitek::clbkSimulationEnd()
+{
+	radioPanel->clearDisplay();
+
+}
 
 

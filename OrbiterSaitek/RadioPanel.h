@@ -12,6 +12,7 @@ public:
 
 	void checkInputs();
 	void updateDisplay();
+	void clearDisplay();
 
 private:
 	void increaseNav(VESSEL *vessel, DWORD navNum , bool decimal, bool increase );
