@@ -6,6 +6,7 @@
 
 
 class RadioPanel;
+class SwitchPanel;
 
 class OrbiterSaitek : public oapi::Module
 {
@@ -19,7 +20,7 @@ public:
 private:
 
 	RadioPanel * radioPanel;
-
+	SwitchPanel * switchPanel;
 };
 
 

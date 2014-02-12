@@ -9,6 +9,7 @@
 #include "OrbiterSaitek.h"
 
 #include "RadioPanel.h"
+#include "SwitchPanel.h"
 #include "hidapi.h"
 
 HINSTANCE g_hDLL; 
@@ -30,13 +31,13 @@ OrbiterSaitek::OrbiterSaitek(HINSTANCE hDLL)
 	: oapi::Module(hDLL)
 {
 	radioPanel = new RadioPanel();
-
+	switchPanel = new SwitchPanel();
 }
 
 OrbiterSaitek::~OrbiterSaitek()
 {
 	delete radioPanel;
-
+	delete switchPanel;
 	hid_exit();
 }
 
@@ -44,16 +45,19 @@ OrbiterSaitek::~OrbiterSaitek()
 void OrbiterSaitek::clbkPreStep (double SimT, double SimDT, double mjd) // call every timestep
 {
 	radioPanel->checkInputs();
+	switchPanel->checkInputs();
 }
 
 void OrbiterSaitek::clbkPostStep (double SimT, double SimDT, double mjd) // call every timestep
 {
 	radioPanel->updateDisplay();
+	switchPanel->updateDisplay();
 }
 
 void OrbiterSaitek::clbkSimulationEnd()
 {
 	radioPanel->clearDisplay();
+	switchPanel->clearDisplay();
 
 }
 
