@@ -20,7 +20,65 @@ SwitchPanel::~SwitchPanel(void)
 
 void SwitchPanel::checkInputs()
 {
+	static unsigned char inBuffer[5];
 
+
+	if (!handle)
+	{
+		return;
+	}
+
+	VESSEL *vessel = oapiGetFocusInterface(); // Get current vessel
+
+
+	int bytesRead = hid_read(handle, inBuffer, sizeof(inBuffer));
+	if (vessel!=NULL) // check if pointer is valid
+	{
+
+		//0x04 >> gear up
+		//0x08 >> gear down
+
+		if (bytesRead==3)
+		{
+			char keyByte = inBuffer[2];
+			if (keyByte & 0x04) 
+			{
+				// gear up
+				setGear(vessel, true);
+			}
+
+			if (keyByte & 0x08) 
+			{
+				// gear down
+				setGear(vessel, false);
+			}
+
+
+		}
+	}
+
+
+}
+
+void SwitchPanel::setGear(VESSEL * vessel, bool up)
+{
+	if (XRVesselCtrl::IsXRVesselCtrl(vessel))
+	{
+		// is XR vessel
+		XRVesselCtrl * xrVessel = static_cast<XRVesselCtrl *>(vessel);
+		if (xrVessel->GetCtrlAPIVersion() >= THIS_XRVESSELCTRL_API_VERSION)
+		{
+			XRDoorState doorState = xrVessel->GetDoorState(XRD_Gear,NULL);
+			if (up && (doorState== XRDS_Open || doorState== XRDS_Opening))
+			{
+				xrVessel->SetDoorState(XRD_Gear,XRDS_Closing);
+			}
+			else if (!up && (doorState== XRDS_Closed || doorState== XRDS_Closing))
+			{
+				xrVessel->SetDoorState(XRD_Gear,XRDS_Opening);
+			}
+		}
+	}
 }
 
 void SwitchPanel::updateDisplay()
@@ -98,5 +156,17 @@ void SwitchPanel::updateDisplay()
 
 void SwitchPanel::clearDisplay()
 {
+	static unsigned char buf[2];
+
+	if (!handle)
+	{
+		return;
+	}
+
+	buf[0]=0x00;
+	buf[1]=0x00;
+
+
+	int res = hid_send_feature_report(handle, buf, 2);	
 
 }

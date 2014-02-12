@@ -15,6 +15,7 @@ public:
 	void clearDisplay();
 
 private:
+	void setGear(VESSEL * vessel, bool up);
 	hid_device *handle;
 
 };
